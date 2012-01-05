@@ -100,7 +100,6 @@ config CRC32_SLICEBY8
 	  This is the fastest algorithm, but comes with a 8KiB lookup table.
 	  Most modern processors have enough cache to hold this table without
 	  thrashing the cache.
-
 	  This is the default implementation choice.  Choose this one unless
 	  you have a good reason not to.
 
@@ -110,7 +109,6 @@ config CRC32_SLICEBY4
 	  Calculate checksum 4 bytes at a time with a clever slicing algorithm.
 	  This is a bit slower than slice by 8, but has a smaller 4KiB lookup
 	  table.
-
 	  Only choose this option if you know what you are doing.
 
 config CRC32_SARWATE
@@ -118,7 +116,6 @@ config CRC32_SARWATE
 	help
 	  Calculate checksum a byte at a time using Sarwate's algorithm.  This
 	  is not particularly fast, but has a small 256 byte lookup table.
-
 	  Only choose this option if you know what you are doing.
 
 config CRC32_BIT
@@ -126,7 +123,6 @@ config CRC32_BIT
 	help
 	  Calculate checksum one bit at a time.  This is VERY slow, but has
 	  no lookup table.  This is provided as a debugging option.
-
 	  Only choose this option if you are debugging crc32.
 
 endchoice
