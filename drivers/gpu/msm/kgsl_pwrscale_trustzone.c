@@ -150,6 +150,7 @@ static int simple_governor(struct kgsl_device *device, int idle_stat)
 
 	/* it's currently busy */
 	if (idle_stat < ramp_up_threshold) {
+	if (idle_stat < 6000) {
 		if (pwr->active_pwrlevel == 0)
 			val = 0; /* already maxed, so do nothing */
 		else if ((pwr->active_pwrlevel > 0) &&
@@ -228,8 +229,19 @@ static void tz_idle(struct kgsl_device *device, struct kgsl_pwrscale *pwrscale)
 	priv->bin.busy_time = 0;
 	if (val)
 
+	idle = stats.total_time - stats.busy_time;
+	idle = (idle > 0) ? idle : 0;
+#ifdef CONFIG_MSM_KGSL_SIMPLE_GOV
+	val = simple_governor(device, idle);
+#else
+	val = __secure_tz_entry(TZ_UPDATE_ID, idle, device->id);
+#endif
+	if (val) {
 		kgsl_pwrctrl_pwrlevel_change(device,
 					     pwr->active_pwrlevel + val);
+		//pr_info("TZ idle stat: %d, TZ PL: %d, TZ out: %d\n",
+		//		idle, pwr->active_pwrlevel, val);
+	}
 }
 
 static void tz_busy(struct kgsl_device *device,
