@@ -402,3 +402,14 @@ obj-$(CONFIG_MSM_CPU_PWRCTL) +=  msm_cpu_pwrctl.o
 obj-$(CONFIG_SEC_DEBUG) += sec_debug.o sec_getlog.o sec_gaf.o
 
 obj-$(CONFIG_ARCH_RANDOM) += early_random.o
+
+obj-$(CONFIG_PERFMAP) += perfmap.o
+obj-$(CONFIG_MMI_RAM_INFO) += mmi-ram-info.o
+obj-$(CONFIG_MMI_UNIT_INFO) += mmi-unit-info.o
+obj-$(CONFIG_MMI_SOC_INFO) += mmi_soc_info.o
+obj-$(CONFIG_MMI_MSM_PINMUX) += mmi-pinmux.o
+obj-$(CONFIG_PM_DEBUG) += pm_debug.o
+
+obj-$(CONFIG_LCD_KCAL) += board_kcal.o kcal_ctrl.o
+obj-$(CONFIG_INTELLI_PLUG) += intelli_plug.o
+
