@@ -44,12 +44,12 @@
  */
 
 #define DEF_FREQUENCY_DOWN_DIFFERENTIAL		(10)
-#define DEF_FREQUENCY_UP_THRESHOLD		(95)
+#define DEF_FREQUENCY_UP_THRESHOLD		(75)
 #define DEF_SAMPLING_DOWN_FACTOR		(1)
 #define BOOSTED_SAMPLING_DOWN_FACTOR		(10)
 #define MAX_SAMPLING_DOWN_FACTOR		(100000)
 #define MICRO_FREQUENCY_DOWN_DIFFERENTIAL	(3)
-#define MICRO_FREQUENCY_UP_THRESHOLD		(95)
+#define MICRO_FREQUENCY_UP_THRESHOLD		(75)
 #define MICRO_FREQUENCY_MIN_SAMPLE_RATE		(15000)
 #define MIN_FREQUENCY_UP_THRESHOLD		(11)
 #define MAX_FREQUENCY_UP_THRESHOLD		(100)
@@ -59,11 +59,7 @@
 #define BOOSTED_SAMPLING_RATE			(15000)
 #define DBS_INPUT_EVENT_MIN_FREQ		(1026000)
 #define DBS_SYNC_FREQ				(702000)
-#define DBS_OPTIMAL_FREQ			(1134000)
-
-#ifdef CONFIG_CPUFREQ_ID_PERFLOCK
-#define DBS_PERFLOCK_MIN_FREQ			(594000)
-#endif
+#define DBS_OPTIMAL_FREQ			(1296000)
 
 static u64 freq_boosted_time;
 /*
@@ -97,7 +93,7 @@ static u64 sampling_rate_boosted_time;
 static unsigned int current_sampling_rate;
 
 #ifdef CONFIG_CPUFREQ_ID_PERFLOCK
-static unsigned int saved_policy_min = 0;
+static unsigned int saved_policy_min;
 #endif
 
 static void do_dbs_timer(struct work_struct *work);
@@ -1209,10 +1205,9 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 				freq_next = dbs_tuners_ins.sync_freq;
 
 			if (max_load_freq >
-				 ((dbs_tuners_ins.up_threshold_multi_core -
+				 (dbs_tuners_ins.up_threshold_multi_core -
 				  dbs_tuners_ins.down_differential_multi_core) *
-				  policy->cur) &&
-				freq_next < dbs_tuners_ins.optimal_freq)
+				  policy->cur)
 				freq_next = dbs_tuners_ins.optimal_freq;
 
 		}
@@ -1351,18 +1346,6 @@ static void do_dbs_timer(struct work_struct *work)
 	else
 		if (rq_persist_count > 0)
 			rq_persist_count--;
-
-#ifdef CONFIG_CPUFREQ_ID_PERFLOCK
-	if (cpu == 0) {
-		if (num_online_cpus() >= 2) {
-			if (saved_policy_min != 0)
-				policy->min = saved_policy_min;
-		} else if (num_online_cpus() == 1) {
-			saved_policy_min = policy->min;
-			policy->min = DBS_PERFLOCK_MIN_FREQ;
-		}
-	}
-#endif
 
 #ifdef CONFIG_CPUFREQ_LIMIT_MAX_FREQ
 	if (rq_persist_count > 3) {
@@ -1744,7 +1727,6 @@ static void dbs_input_event(struct input_handle *handle, unsigned int type,
 static int input_dev_filter(const char *input_dev_name)
 {
 	if (strstr(input_dev_name, "touchscreen") ||
-		strstr(input_dev_name, "sec_touchscreen") ||
 		strstr(input_dev_name, "-keypad") ||
 		strstr(input_dev_name, "-nav") ||
 		strstr(input_dev_name, "-oj")) {
@@ -1828,6 +1810,8 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 
 		mutex_lock(&dbs_mutex);
 
+		dbs_chown();
+
 		dbs_enable++;
 		for_each_cpu(j, policy->cpus) {
 			struct cpu_dbs_info_s *j_dbs_info;
@@ -1854,7 +1838,6 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 			rc = sysfs_create_group(cpufreq_global_kobject,
 						&dbs_attr_group);
 			if (rc) {
-				dbs_chown();
 				mutex_unlock(&dbs_mutex);
 				return rc;
 			}
