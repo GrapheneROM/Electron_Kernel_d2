@@ -1,4 +1,3 @@
-
 /*
  * drivers/cpufreq/cpufreq_asswax.c
  *
@@ -60,13 +59,17 @@
  */
 static unsigned int awake_ideal_freq = 594000;
 
+static unsigned int interactive_ideal_freq = 810000;
+
+static unsigned int interactive_timeout = 2;
+
 /*
  * The "ideal" frequency to use when suspended.
  * When set to 0, the governor will not track the suspended state (meaning
  * that practically when sleep_ideal_freq==0 the awake_ideal_freq is used
  * also when suspended).
  */
-static unsigned int sleep_ideal_freq = 324000;
+static unsigned int sleep_ideal_freq = 384000;
 
 /*
  * Freqeuncy delta when ramping up above the ideal freqeuncy.
@@ -85,7 +88,7 @@ static unsigned int ramp_down_step = 0;
 /*
  * CPU freq will be increased if measured load > max_cpu_load;
  */
-static unsigned long max_cpu_load = 95;
+static unsigned long max_cpu_load = 85;
 
 /*
  * CPU freq will be decreased if measured load < min_cpu_load;
@@ -108,7 +111,7 @@ static unsigned long down_rate_us = 20000;
  * The frequency to set when waking up from sleep.
  * When sleep_ideal_freq=0 this will have no effect.
  */
-static unsigned int sleep_wakeup_freq = 1512000; // typo? -dm yup -gideonx
+static unsigned int sleep_wakeup_freq = 151200; // typo? -dm
 
 /*
  * Sampling rate, I highly recommend to leave it at 2.
@@ -188,6 +191,10 @@ static void asswax_update_min_max(struct asswax_info_s *this_asswax, struct cpuf
 	case 1:
 		tmp = awake_ideal_freq;
 		break;
+	case 2:
+	case 3:
+		tmp = interactive_ideal_freq;
+		break;
 	}
 	this_asswax->ideal_speed =
 		policy->max > tmp ? (tmp > policy->min ? tmp : policy->min) : policy->max;
@@ -230,6 +237,20 @@ inline static int work_cpumask_test_and_clear(unsigned long cpu) {
 	spin_unlock_irqrestore(&cpumask_lock, flags);
 	return res;
 }
+
+static void do_disable_interaction(unsigned long data) {
+	asswax_state = 1;
+	asswax_update_min_max_allcpus();
+}
+static DEFINE_TIMER(interaction_timer, do_disable_interaction, 0, 0);
+static inline void begin_interaction_timeout(void) {
+	mod_timer(&interaction_timer, jiffies + interactive_timeout);
+}
+static inline void end_interaction_timeout(void) {
+	if (timer_pending(&interaction_timer))
+		del_timer(&interaction_timer);
+}
+
 
 inline static int target_freq(struct cpufreq_policy *policy, struct asswax_info_s *this_asswax,
 			      int new_freq, int old_freq, int prefered_relation) {
@@ -334,6 +355,8 @@ static void cpufreq_asswax_timer(unsigned long cpu)
 			work_cpumask_set(cpu);
 			queue_work(up_wq, &freq_scale_work);
 			queued_work = 1;
+			if (asswax_state == 2 && old_freq == this_asswax->ideal_speed)
+				end_interaction_timeout();
 		}
 		else this_asswax->ramp_dir = 0;
 	}
@@ -375,6 +398,8 @@ static int cpufreq_idle_notifier(struct notifier_block *nb,
 		} else if (policy->cur == policy->min) {
 			if (timer_pending(&this_asswax->timer))
 				del_timer(&this_asswax->timer);
+			else if (asswax_state == 2)
+				begin_interaction_timeout();
 		}
 	} else if (val == IDLE_END) {
 		if (policy->cur == policy->min && !timer_pending(&this_asswax->timer))
@@ -398,9 +423,9 @@ static void cpufreq_asswax_freq_change_time_work(struct work_struct *work)
 	struct cpufreq_policy *policy;
 	unsigned int relation = CPUFREQ_RELATION_L;
 	for_each_possible_cpu(cpu) {
-		this_asswax = &per_cpu(asswax_info, cpu);
 		if (!work_cpumask_test_and_clear(cpu))
-		  continue;
+			continue;
+		this_asswax = &per_cpu(asswax_info, cpu);
 
 		ramp_dir = this_asswax->ramp_dir;
 		this_asswax->ramp_dir = 0;
@@ -574,6 +599,42 @@ static ssize_t store_awake_ideal_freq(struct kobject *kobj, struct attribute *at
 	return count;
 }
 
+static ssize_t show_interactive_ideal_freq(struct kobject *kobj, struct attribute *attr, char *buf)
+{
+	return sprintf(buf, "%u\n", interactive_ideal_freq);
+}
+
+static ssize_t store_interactive_ideal_freq(struct kobject *kobj, struct attribute *attr, const char *buf, size_t count)
+{
+	ssize_t res;
+	unsigned long input;
+	res = strict_strtoul(buf, 0, &input);
+	if (res >= 0 && input >= 0) {
+		interactive_ideal_freq = input;
+		if (asswax_state == 1)
+			asswax_update_min_max_allcpus();
+	}
+	return count;
+}
+
+static ssize_t show_interactive_timeout_jiffies(struct kobject *kobj, struct attribute *attr, char *buf)
+{
+	return sprintf(buf, "%u\n", interactive_timeout);
+}
+
+static ssize_t store_interactive_timeout_jiffies(struct kobject *kobj, struct attribute *attr, const char *buf, size_t count)
+{
+	ssize_t res;
+	unsigned long input;
+	res = strict_strtoul(buf, 0, &input);
+	if (res >= 0 && input >= 0) {
+		interactive_timeout = input;
+		if (asswax_state == 1)
+			asswax_update_min_max_allcpus();
+	}
+	return count;
+}
+
 static ssize_t show_sample_rate_jiffies(struct kobject *kobj, struct attribute *attr, char *buf)
 {
 	return sprintf(buf, "%u\n", sample_rate_jiffies);
@@ -661,6 +722,8 @@ define_global_rw_attr(down_rate_us);
 define_global_rw_attr(sleep_ideal_freq);
 define_global_rw_attr(sleep_wakeup_freq);
 define_global_rw_attr(awake_ideal_freq);
+define_global_rw_attr(interactive_ideal_freq);
+define_global_rw_attr(interactive_timeout_jiffies);
 define_global_rw_attr(sample_rate_jiffies);
 define_global_rw_attr(ramp_up_step);
 define_global_rw_attr(ramp_down_step);
@@ -676,6 +739,8 @@ static struct attribute * asswax_attributes[] = {
 	&sleep_ideal_freq_attr.attr,
 	&sleep_wakeup_freq_attr.attr,
 	&awake_ideal_freq_attr.attr,
+	&interactive_ideal_freq_attr.attr,
+	&interactive_timeout_jiffies_attr.attr,
 	&sample_rate_jiffies_attr.attr,
 	&ramp_up_step_attr.attr,
 	&ramp_down_step_attr.attr,
@@ -759,7 +824,6 @@ static int cpufreq_governor_asswax(struct cpufreq_policy *new_policy,
 			idle_notifier_unregister(&cpufreq_idle_nb);
 		}
 		break;
-
 	}
 
 	return 0;
@@ -868,6 +932,7 @@ module_init(cpufreq_asswax_init);
 
 static void __exit cpufreq_asswax_exit(void)
 {
+	end_interaction_timeout();
 	cpufreq_unregister_governor(&cpufreq_gov_asswax);
 	destroy_workqueue(up_wq);
 	destroy_workqueue(down_wq);
