@@ -208,34 +208,35 @@ unsigned int ui_sampling_rate;
 unsigned int ui_timeout;
 unsigned int enable_boost_cpu;
 } dbs_tuners_ins = {
-.up_threshold_multi_core = DEF_FREQUENCY_UP_THRESHOLD,
-.up_threshold = DEF_FREQUENCY_UP_THRESHOLD,
-.sampling_down_factor = DEF_SAMPLING_DOWN_FACTOR,
-.down_differential = DEF_FREQUENCY_DOWN_DIFFERENTIAL,
-.down_differential_multi_core = MICRO_FREQUENCY_DOWN_DIFFERENTIAL,
-.up_threshold_any_cpu_load = DEF_FREQUENCY_UP_THRESHOLD,
-.ignore_nice = 0,
-.powersave_bias = 0,
-.sync_freq = 0,
-.optimal_freq = 0,
-//20130711 smart_up
-.smart_up = SMART_UP_PLUS,
-.smart_slow_up_load = SUP_SLOW_UP_LOAD,
-.smart_slow_up_freq = SUP_SLOW_UP_FREQUENCY,
-.smart_slow_up_dur = SUP_SLOW_UP_DUR_DEFAULT,
-.smart_high_slow_up_freq = SUP_HIGH_SLOW_UP_FREQUENCY,
-.smart_high_slow_up_dur = SUP_HIGH_SLOW_UP_DUR,
-.smart_each_off = 0,
-// end smart_up
-.freq_step = DEF_FREQ_STEP,
-.step_up_early_hispeed = DEF_STEP_UP_EARLY_HISPEED,
-.step_up_interim_hispeed = DEF_STEP_UP_INTERIM_HISPEED,
-.sampling_early_factor = DEF_SAMPLING_EARLY_HISPEED_FACTOR,
-.sampling_interim_factor = DEF_SAMPLING_INTERIM_HISPEED_FACTOR,
-.two_phase_freq = 0,
-.ui_sampling_rate = DEF_UI_DYNAMIC_SAMPLING_RATE,
-.ui_timeout = DBS_UI_SAMPLING_TIMEOUT,
-.enable_boost_cpu = 1,
+	.up_threshold_multi_core = DEF_FREQUENCY_UP_THRESHOLD,
+	.up_threshold = DEF_FREQUENCY_UP_THRESHOLD,
+	.sampling_down_factor = DEF_SAMPLING_DOWN_FACTOR,
+	.down_differential = DEF_FREQUENCY_DOWN_DIFFERENTIAL,
+	.down_differential_multi_core = MICRO_FREQUENCY_DOWN_DIFFERENTIAL + 10,
+	.up_threshold_any_cpu_load = DEF_FREQUENCY_UP_THRESHOLD + 20,
+	.ignore_nice = 0,
+	.powersave_bias = 0,
+	.sync_freq = 0,
+	.optimal_freq = 0,
+	//20130711 smart_up 
+	.smart_up = SMART_UP_PLUS,
+	.smart_slow_up_load = SUP_SLOW_UP_LOAD,
+	.smart_slow_up_freq = SUP_SLOW_UP_FREQUENCY,
+	.smart_slow_up_dur = SUP_SLOW_UP_DUR_DEFAULT,
+	.smart_high_slow_up_freq = SUP_HIGH_SLOW_UP_FREQUENCY,
+	.smart_high_slow_up_dur = SUP_HIGH_SLOW_UP_DUR,
+	.smart_each_off = 0,	
+	// end smart_up
+	.freq_step = DEF_FREQ_STEP,
+	.step_up_early_hispeed = DEF_STEP_UP_EARLY_HISPEED,
+	.step_up_interim_hispeed = DEF_STEP_UP_INTERIM_HISPEED,
+	.sampling_early_factor = DEF_SAMPLING_EARLY_HISPEED_FACTOR,
+	.sampling_interim_factor = DEF_SAMPLING_INTERIM_HISPEED_FACTOR,
+	.two_phase_freq = 0,
+	.ui_sampling_rate = DEF_UI_DYNAMIC_SAMPLING_RATE,
+	.ui_timeout = DBS_UI_SAMPLING_TIMEOUT,
+	.enable_boost_cpu = 1,
+
 };
 static inline u64 get_cpu_idle_time_jiffy(unsigned int cpu, u64 *wall)
 {
