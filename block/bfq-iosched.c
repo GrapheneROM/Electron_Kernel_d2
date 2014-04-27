@@ -3508,7 +3508,7 @@ static void *bfq_init_queue(struct request_queue *q)
 	bfqd->bfq_wr_max_time = 0;
 	bfqd->bfq_wr_min_idle_time = msecs_to_jiffies(2000);
 	bfqd->bfq_wr_min_inter_arr_async = msecs_to_jiffies(500);
-	bfqd->bfq_wr_max_softrt_rate = 2000; /*
+	bfqd->bfq_wr_max_softrt_rate = 7000; /*
 					      * Approximate rate required
 					      * to playback or record a
 					      * high-definition compressed
@@ -3809,7 +3809,7 @@ static int __init bfq_init(void)
 	/*
 	 * Can be 0 on HZ < 1000 setups.
 	 */
-	if (bfq_slice_idle == 0)
+	if (bfq_slice_idle == 0 && HZ >= 1000)
 		bfq_slice_idle = 1;
 
 	if (bfq_timeout_async == 0)
