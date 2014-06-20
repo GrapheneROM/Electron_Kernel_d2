@@ -407,6 +407,10 @@ obj-$(CONFIG_SEC_DEBUG) += sec_debug.o sec_getlog.o sec_gaf.o
 
 obj-$(CONFIG_ARCH_RANDOM) += early_random.o
 
+obj-$(CONFIG_ARCH_MSM8974) += msm_mpmctr.o
+obj-$(CONFIG_MSM_CPR_REGULATOR) += cpr-regulator.o
+obj-$(CONFIG_CPU_FREQ_MSM) += cpufreq.o
+
 obj-$(CONFIG_PERFMAP) += perfmap.o
 obj-$(CONFIG_MMI_RAM_INFO) += mmi-ram-info.o
 obj-$(CONFIG_MMI_UNIT_INFO) += mmi-unit-info.o
