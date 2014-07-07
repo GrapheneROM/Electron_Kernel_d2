@@ -2655,9 +2655,3 @@ config MSM_USE_USER_ACCESSIBLE_TIMERS
 	  memory page containing the cycle counter.
 
 endif
-
-config INTELLI_PLUG
-	bool "Enable intelli-plug cpu hotplug driver"
-	default n
-	help
-	  Generic Intelli-plug cpu hotplug driver for ARM SOCs
