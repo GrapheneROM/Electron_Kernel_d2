@@ -749,6 +749,58 @@ static int msm_routing_set_compressed_vol_mixer(struct snd_kcontrol *kcontrol,
 		msm_route_compressed_vol_control =
 			ucontrol->value.integer.value[0];
 
+
+static int msm_routing_set_srs_trumedia_control_(struct snd_kcontrol *kcontrol,
+				struct snd_ctl_elem_value *ucontrol)
+{
+	unsigned int techs = 0;
+	unsigned short offset, value, max, index;
+
+	srs_alsa_ctrl_ever_called = 1;
+
+	max = sizeof(msm_srs_trumedia_params) >> 1;
+	index = (unsigned short)((ucontrol->value.integer.value[0] &
+			SRS_PARAM_INDEX_MASK) >> 31);
+	if (SRS_CMD_UPLOAD ==
+		(ucontrol->value.integer.value[0] & SRS_CMD_UPLOAD)) {
+		techs = ucontrol->value.integer.value[0] & 0xFF;
+		pr_debug("SRS %s: send params request, flags = %u",
+			__func__, techs);
+		if (srs_port_id >= 0 && techs)
+			srs_send_params(srs_port_id, techs, index);
+		return 0;
+	}
+	offset = (unsigned short)((ucontrol->value.integer.value[0] &
+			SRS_PARAM_OFFSET_MASK) >> 16);
+	value = (unsigned short)(ucontrol->value.integer.value[0] &
+			SRS_PARAM_VALUE_MASK);
+	if ((offset < max) && (index < SRS_TRUMEDIA_INDEX)) {
+		msm_srs_trumedia_params[index].raw_params[offset] = value;
+		pr_debug("SRS %s: index set... (max %d, requested %d, val %d, paramblockidx %d)",
+			__func__, max, offset, value, index);
+	} else {
+		pr_err("SRS %s: index out of bounds! (max %d, requested %d)",
+				__func__, max, offset);
+	}
+	if (offset == 4) {
+		int i;
+		for (i = 0; i < max; i++) {
+			if (i == 0) {
+				pr_debug("SRS %s: global block start",
+						__func__);
+			}
+			if (i ==
+			(sizeof(struct srs_trumedia_params_GLOBAL) >> 1)) {
+				pr_debug("SRS %s: wowhd block start at offset %d word offset %d",
+					__func__, i, i>>1);
+				break;
+			}
+			if ((i < 1) && (i >= 0))
+			pr_debug("SRS %s: param_index %d index %d val %d",
+				__func__, index, i,
+				msm_srs_trumedia_params[index].raw_params[i]);
+		}
+	}
 	return 0;
 }
 

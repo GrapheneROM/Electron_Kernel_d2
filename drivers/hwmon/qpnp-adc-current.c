@@ -416,6 +416,10 @@ int32_t qpnp_iadc_read(enum qpnp_iadc_channels channel,
 {
 	struct qpnp_iadc_drv *iadc = qpnp_iadc;
 	int32_t vsense_mv = 0, rc;
+	int32_t rc, rsense_n_ohms = 0, sign = 0, num, mode_sel = 0;
+	int32_t rsense_u_ohms = 0;
+	int64_t result_current;
+	uint16_t raw_data;
 
 	if (!iadc || !iadc->iadc_initialized)
 		return -EPROBE_DEFER;
