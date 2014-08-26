@@ -1,6 +1,6 @@
 VERSION = 3
 PATCHLEVEL = 4
-SUBLEVEL = 104
+SUBLEVEL = 105
 EXTRAVERSION =
 NAME = Saber-toothed Squirrel
 
@@ -347,8 +347,8 @@ CHECK		= sparse
 
 # Use the wrapper for the compiler.  This wrapper scans for new
 # warnings and causes the build to stop upon encountering them.
-CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC) $(GRAPHITE_FLAGS) -pipe
-CPP 		= $(GRAPHITE_FLAGS) -pipe
+CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC) 
+#CPP 		= $(GRAPHITE_FLAGS) -pipe
 
 # Include Graphite Optimizations. Automatically detects if SaberMod
 # toolchain is in use to prevent build errors.
