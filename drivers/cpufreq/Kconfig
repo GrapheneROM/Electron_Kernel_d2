@@ -50,6 +50,13 @@ choice
 	  This option sets which CPUFreq governor shall be loaded at
 	  startup. If in doubt, select 'performance'.
 
+config CPU_FREQ_DEFAULT_GOV_INTELLIMM
+        bool "intelliminmax"
+        select CPU_FREQ_GOV_INTELLIMM
+        help
+          Use the CPUFreq governor 'intelliminmax' as default. This is
+          governor will use only 3 different frequencies, idle, UI and max
+
 config CPU_FREQ_DEFAULT_GOV_PERFORMANCE
 	bool "performance"
 	select CPU_FREQ_GOV_PERFORMANCE
@@ -157,7 +164,40 @@ config CPU_FREQ_GOV_ONDEMAND
 	  changes frequency based on the CPU utilization.
 	  The support for this governor depends on CPU capability to
 	  do fast frequency switching (i.e, very low latency frequency
+<<<<<<< HEAD
 	  transitions). 
+=======
+	  transitions). with browsing detection based on GPU loading
+	
+	  To compile this driver as a module, choose M here: the
+	  module will be called cpufreq_ondemand.
+	
+	  For details, take a look at linux/Documentation/cpu-freq.
+	
+	  If in doubt, say N.
+
+config CPU_FREQ_GOV_INTELLIDEMAND_2_PHASE
+	tristate "'2-phase' power-efficiency ondemand algorithm"
+	depends on CPU_FREQ_GOV_INTELLIDEMAND
+	help
+	  '2-phase' - This driver adds a new algo to save power
+
+config CPU_FREQ_GOV_INTELLIMM
+        tristate "'intelliminmax' cpufreq policy governor"
+        help
+          To compile this driver as a module, choose M here: the
+          module will be called cpufreq_interactive.
+
+          For details, take a look at linux/Documentation/cpu-freq.
+
+          If in doubt, say N.
+
+config CPU_FREQ_GOV_SLIM
+	tristate "'slim' cpufreq policy governor"
+	select CPU_FREQ_TABLE
+	help
+	  'slim' - This driver adds a dynamic cpufreq policy governor.
+>>>>>>> fbc8b1e... cpufreq: Introduce intellimm
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called cpufreq_ondemand.
