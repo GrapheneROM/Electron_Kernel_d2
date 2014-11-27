@@ -14,7 +14,7 @@ fi
 
 # make .config
 env KCONFIG_NOTIMESTAMP=true \
-make ARCH=arm CROSS_COMPILE=arm-eabi- ${DEFCONFIG_FILE}
+make ARCH=arm CROSS_COMPILE=../saber/bin/arm-eabi- ${DEFCONFIG_FILE}
 
 # run menuconfig
 env KCONFIG_NOTIMESTAMP=true \
