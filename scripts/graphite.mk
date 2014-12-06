@@ -15,11 +15,9 @@
 # Graphite agruments.
 GRAPHITE_FLAGS := -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -ftree-loop-distribution -ftree-loop-im -fivopts -funswitch-loops -funroll-loops -ftree-loop-ivcanon -pipe
 
-# Check for SaberMod Toolchain
-ifeq ($(strip $(CROSS_COMPILE)),../saber/bin/arm-eabi-)
-	CFLAGS_MODULE += $(call cc-option,$(GRAPHITE_FLAGS))
-	AFLAGS_MODULE += $(call cc-option,$(GRAPHITE_FLAGS))
-	CFLAGS_KERNEL += $(call cpp-option,$(GRAPHITE_FLAGS))
-	AFLAGS_KERNEL += $(call cpp-option,$(GRAPHITE_FLAGS))
-	KBUILD_CFLAGS += $(call cpp-option,$(GRAPHITE_FLAGS))
-endif
+# Add Flags
+CFLAGS_MODULE += $(call cc-option,$(GRAPHITE_FLAGS))
+AFLAGS_MODULE += $(call cc-option,$(GRAPHITE_FLAGS))
+CFLAGS_KERNEL += $(call cpp-option,$(GRAPHITE_FLAGS))
+AFLAGS_KERNEL += $(call cpp-option,$(GRAPHITE_FLAGS))
+KBUILD_CFLAGS += $(call cpp-option,$(GRAPHITE_FLAGS))
