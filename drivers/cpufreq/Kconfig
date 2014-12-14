@@ -164,23 +164,7 @@ config CPU_FREQ_GOV_ONDEMAND
 	  changes frequency based on the CPU utilization.
 	  The support for this governor depends on CPU capability to
 	  do fast frequency switching (i.e, very low latency frequency
-<<<<<<< HEAD
 	  transitions). 
-=======
-	  transitions). with browsing detection based on GPU loading
-	
-	  To compile this driver as a module, choose M here: the
-	  module will be called cpufreq_ondemand.
-	
-	  For details, take a look at linux/Documentation/cpu-freq.
-	
-	  If in doubt, say N.
-
-config CPU_FREQ_GOV_INTELLIDEMAND_2_PHASE
-	tristate "'2-phase' power-efficiency ondemand algorithm"
-	depends on CPU_FREQ_GOV_INTELLIDEMAND
-	help
-	  '2-phase' - This driver adds a new algo to save power
 
 config CPU_FREQ_GOV_INTELLIMM
         tristate "'intelliminmax' cpufreq policy governor"
@@ -191,20 +175,6 @@ config CPU_FREQ_GOV_INTELLIMM
           For details, take a look at linux/Documentation/cpu-freq.
 
           If in doubt, say N.
-
-config CPU_FREQ_GOV_SLIM
-	tristate "'slim' cpufreq policy governor"
-	select CPU_FREQ_TABLE
-	help
-	  'slim' - This driver adds a dynamic cpufreq policy governor.
->>>>>>> fbc8b1e... cpufreq: Introduce intellimm
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called cpufreq_ondemand.
-
-	  For details, take a look at linux/Documentation/cpu-freq.
-
-	  If in doubt, say N.
 
 config CPU_FREQ_GOV_INTERACTIVE
 	tristate "'interactive' cpufreq policy governor"
