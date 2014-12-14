@@ -354,15 +354,13 @@ CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 # toolchain is in use to prevent build errors.
 include $(srctree)/scripts/graphite.mk
 
-KERNELFLAGS	= -Ofast -DNDEBUG -munaligned-access -fgcse-lm -fgcse-sm -fsingle-precision-constant -fforce-addr -fsched-spec-load -marm -ftree-vectorize -mvectorize-with-neon-quad -funroll-loops -fpredictive-commoning -ffast-math
-MODFLAGS	= -DMODULE -lto $(KERNELFLAGS)
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-CFLAGS_MODULE   = $(MODFLAGS)
-AFLAGS_MODULE   = $(MODFLAGS)
+CFLAGS_MODULE   = -lto
+AFLAGS_MODULE   = -lto
 LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
-CFLAGS_KERNEL	= -lto $(KERNELFLAGS)
-AFLAGS_KERNEL	= $(KERNELFLAGS)
+CFLAGS_KERNEL	= -lto -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops
+AFLAGS_KERNEL	= -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 
@@ -382,7 +380,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   -funswitch-loops\
 		   $(GRAPHITE_FLAGS)
-KBUILD_AFLAGS_KERNEL :=-fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -pipe
+KBUILD_AFLAGS_KERNEL :=-fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant 
 KBUILD_CFLAGS_KERNEL := -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -pipe
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE
