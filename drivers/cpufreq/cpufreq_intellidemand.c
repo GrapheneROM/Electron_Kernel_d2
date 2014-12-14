@@ -1122,7 +1122,7 @@ return 0;
 void set_two_phase_freq_by_cpu ( int cpu_nr, int cpufreq){
 two_phase_freq_array[cpu_nr-1] = cpufreq;
 }
-int input_event_boosted(void)
+int input_event_boosted2(void)
 {
 unsigned long flags;
 spin_lock_irqsave(&input_boost_lock, flags);
@@ -1437,7 +1437,7 @@ dbs_tuners_ins.optimal_freq);
 return;
 }
 }
-if (input_event_boosted()) {
+if (input_event_boosted2()) {
 return;
 }
 /* Check for frequency decrease */
@@ -1537,7 +1537,7 @@ if (num_online_cpus() > 1)
 delay -= jiffies % delay;
 }
 } else {
-if (input_event_boosted())
+if (input_event_boosted2())
 goto sched_wait;
 __cpufreq_driver_target(dbs_info->cur_policy,
 dbs_info->freq_lo, CPUFREQ_RELATION_H);
