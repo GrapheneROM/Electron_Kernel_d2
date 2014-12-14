@@ -145,7 +145,7 @@ static void tz_wake(struct kgsl_device *device, struct kgsl_pwrscale *pwrscale)
 }
 
 #ifdef CONFIG_MSM_KGSL_SIMPLE_GOV
-
+<<<<<<< HEAD
 #define HISTORY_SIZE 10
 
 static int ramp_up_threshold = 5500;
@@ -153,13 +153,18 @@ module_param_named(simple_ramp_threshold, ramp_up_threshold, int, 0664);
 
 static unsigned int history[HISTORY_SIZE] = {0};
 static unsigned int counter = 0;
+=======
 /* KGSL Simple GPU Governor */
 /* Copyright (c) 2011-2013, Paul Reioux (Faux123). All rights reserved. */
 static int default_laziness = 5;
 module_param_named(simple_laziness, default_laziness, int, 0664);
 
 static int ramp_up_threshold = 6000;
+<<<<<<< HEAD
+>>>>>>> 108da48... KGSL: make simple govenor a selectable option, co-exist with ondemand
+=======
 module_param_named(simple_ramp_threshold, ramp_up_threshold, int, 0664);
+>>>>>>> 0503188... KGSL: simple governor: expose tunables to sysfs interface via module_param
 
 static int laziness;
 
@@ -184,11 +189,8 @@ static int simple_governor(struct kgsl_device *device, int idle_stat)
 	{
 		if ((pwr->active_pwrlevel > 0) &&
 	if (idle_stat < ramp_up_threshold) {
-
 		if (pwr->active_pwrlevel == 0)
-			/* already maxed, so do nothing */
-			return 0; 
-		
+			val = 0; /* already maxed, so do nothing */
 		else if ((pwr->active_pwrlevel > 0) &&
 			(pwr->active_pwrlevel <= (pwr->num_pwrlevels - 1)))
 			/* bump up to next pwrlevel */
@@ -208,21 +210,10 @@ static int simple_governor(struct kgsl_device *device, int idle_stat)
 			} else {
 				val = 1; /* above min, lower it */
 				/* reset laziness count */
-
-			if (likely(--laziness > 0)) 
-			{
-				/* don't change anything yet hold off for a while */
-				return 0;
-			} 
-			else 
-			{
-				/* above min, lower it */	
 				laziness = default_laziness;
-				return 1; 	
 			}
 		else if (pwr->active_pwrlevel == (pwr->num_pwrlevels - 1))
-			/* already @ min, so do nothing */
-			return 0; 
+			val = 0; /* already @ min, so do nothing */
 	}
 
 	return 0;
@@ -268,6 +259,7 @@ static void tz_idle(struct kgsl_device *device, struct kgsl_pwrscale *pwrscale)
 		priv->no_switch_cnt = 0;
 	}
 
+<<<<<<< HEAD
 	/* If there is an extended block of busy processing,
 	 * increase frequency.  Otherwise run the normal algorithm.
 	 */
@@ -281,7 +273,7 @@ static void tz_idle(struct kgsl_device *device, struct kgsl_pwrscale *pwrscale)
 	priv->bin.total_time = 0;
 	priv->bin.busy_time = 0;
 	if (val)
-
+=======
 	idle = stats.total_time - stats.busy_time;
 	idle = (idle > 0) ? idle : 0;
 #ifdef CONFIG_MSM_KGSL_SIMPLE_GOV
@@ -293,6 +285,7 @@ static void tz_idle(struct kgsl_device *device, struct kgsl_pwrscale *pwrscale)
 	val = __secure_tz_entry(TZ_UPDATE_ID, idle, device->id);
 #endif
 	if (val) {
+>>>>>>> 108da48... KGSL: make simple govenor a selectable option, co-exist with ondemand
 		kgsl_pwrctrl_pwrlevel_change(device,
 					     pwr->active_pwrlevel + val);
 }
