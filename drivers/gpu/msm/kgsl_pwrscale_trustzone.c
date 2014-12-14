@@ -157,13 +157,11 @@ static unsigned int counter = 0;
 /* Copyright (c) 2011-2013, Paul Reioux (Faux123). All rights reserved. */
 static int default_laziness = 5;
 module_param_named(simple_laziness, default_laziness, int, 0664);
-#define HISTORY_SIZE 10
 
-static int ramp_up_threshold = 5500;
+static int ramp_up_threshold = 6000;
 module_param_named(simple_ramp_threshold, ramp_up_threshold, int, 0664);
 
-static unsigned int history[HISTORY_SIZE] = {0};
-static unsigned int counter = 0;
+static int laziness;
 
 static int simple_governor(struct kgsl_device *device, int idle_stat)
 {
