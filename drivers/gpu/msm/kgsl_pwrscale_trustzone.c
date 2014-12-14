@@ -156,15 +156,9 @@ static unsigned int counter = 0;
 =======
 /* KGSL Simple GPU Governor */
 /* Copyright (c) 2011-2013, Paul Reioux (Faux123). All rights reserved. */
-static int laziness = 5;
-module_param_named(simple_laziness, laziness, int, 0664);
-
+static int lazyness = 5;
 static int ramp_up_threshold = 6000;
-<<<<<<< HEAD
 >>>>>>> 108da48... KGSL: make simple govenor a selectable option, co-exist with ondemand
-=======
-module_param_named(simple_ramp_threshold, ramp_up_threshold, int, 0664);
->>>>>>> 0503188... KGSL: simple governor: expose tunables to sysfs interface via module_param
 
 static int simple_governor(struct kgsl_device *device, int idle_stat)
 {
@@ -200,17 +194,6 @@ static int simple_governor(struct kgsl_device *device, int idle_stat)
 		if ((pwr->active_pwrlevel >= 0) &&
 			(pwr->active_pwrlevel < (pwr->num_pwrlevels - 1)))
 			return 1; 	 
-
-			if (laziness > 0) {
-				/* hold off for a while */
-				laziness--;
-				val = 0; /* don't change anything yet */
-			} else {
-				val = 1; /* above min, lower it */
-				laziness = 5; /* reset laziness count */
-			}
-		else if (pwr->active_pwrlevel == (pwr->num_pwrlevels - 1))
-			val = 0; /* already @ min, so do nothing */
 	}
 
 	return 0;
