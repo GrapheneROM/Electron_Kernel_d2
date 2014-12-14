@@ -145,7 +145,6 @@ static void tz_wake(struct kgsl_device *device, struct kgsl_pwrscale *pwrscale)
 }
 
 #ifdef CONFIG_MSM_KGSL_SIMPLE_GOV
-<<<<<<< HEAD
 #define HISTORY_SIZE 10
 
 static int ramp_up_threshold = 5500;
@@ -153,12 +152,6 @@ module_param_named(simple_ramp_threshold, ramp_up_threshold, int, 0664);
 
 static unsigned int history[HISTORY_SIZE] = {0};
 static unsigned int counter = 0;
-=======
-/* KGSL Simple GPU Governor */
-/* Copyright (c) 2011-2013, Paul Reioux (Faux123). All rights reserved. */
-static int lazyness = 5;
-static int ramp_up_threshold = 6000;
->>>>>>> 108da48... KGSL: make simple govenor a selectable option, co-exist with ondemand
 
 static int simple_governor(struct kgsl_device *device, int idle_stat)
 {
@@ -180,10 +173,6 @@ static int simple_governor(struct kgsl_device *device, int idle_stat)
 	if (total < ramp_up_threshold) 
 	{
 		if ((pwr->active_pwrlevel > 0) &&
-	if (idle_stat < ramp_up_threshold) {
-		if (pwr->active_pwrlevel == 0)
-			val = 0; /* already maxed, so do nothing */
-		else if ((pwr->active_pwrlevel > 0) &&
 			(pwr->active_pwrlevel <= (pwr->num_pwrlevels - 1)))
 			/* bump up to next pwrlevel */
 			return -1; 
