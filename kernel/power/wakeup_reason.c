@@ -30,17 +30,17 @@
 
 #define MAX_WAKEUP_REASON_IRQS 32
 static int irq_list[MAX_WAKEUP_REASON_IRQS];
-static int irq_count;
+static int irqcount;
 static struct kobject *wakeup_reason;
 static spinlock_t resume_reason_lock;
 
-static ssize_t reason_show(struct kobject *kobj, struct kobj_attribute *attr,
+static ssize_t last_resume_reason_show(struct kobject *kobj, struct kobj_attribute *attr,
 		char *buf)
 {
 	int irq_no, buf_offset = 0;
 	struct irq_desc *desc;
 	spin_lock(&resume_reason_lock);
-	for (irq_no = 0; irq_no < irq_count; irq_no++) {
+	for (irq_no = 0; irq_no < irqcount; irq_no++) {
 		desc = irq_to_desc(irq_list[irq_no]);
 		if (desc && desc->action && desc->action->name)
 			buf_offset += sprintf(buf + buf_offset, "%d %s\n",
@@ -53,8 +53,7 @@ static ssize_t reason_show(struct kobject *kobj, struct kobj_attribute *attr,
 	return buf_offset;
 }
 
-static struct kobj_attribute resume_reason = __ATTR(last_resume_reason, 0666,
-		reason_show, NULL);
+static struct kobj_attribute resume_reason = __ATTR_RO(last_resume_reason);
 
 static struct attribute *attrs[] = {
 	&resume_reason.attr,
@@ -79,14 +78,15 @@ void log_wakeup_reason(int irq)
 		printk(KERN_INFO "Resume caused by IRQ %d\n", irq);
 
 	spin_lock(&resume_reason_lock);
-	if (irq_count == MAX_WAKEUP_REASON_IRQS) {
+
+	if (irqcount == MAX_WAKEUP_REASON_IRQS) {
 		spin_unlock(&resume_reason_lock);
 		printk(KERN_WARNING "Resume caused by more than %d IRQs\n",
 				MAX_WAKEUP_REASON_IRQS);
 		return;
 	}
 
-	irq_list[irq_count++] = irq;
+	irq_list[irqcount++] = irq;
 	spin_unlock(&resume_reason_lock);
 }
 
@@ -97,7 +97,7 @@ static int wakeup_reason_pm_event(struct notifier_block *notifier,
 	switch (pm_event) {
 	case PM_SUSPEND_PREPARE:
 		spin_lock(&resume_reason_lock);
-		irq_count = 0;
+		irqcount = 0;
 		spin_unlock(&resume_reason_lock);
 		break;
 	default:
