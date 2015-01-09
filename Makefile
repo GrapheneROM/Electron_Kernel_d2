@@ -193,7 +193,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		:= arm
-CROSS_COMPILE	?= ../saber/bin/arm-eabi-
+CROSS_COMPILE	:= /home/syrup-man/saber/bin/arm-eabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -245,8 +245,8 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 
 HOSTCC       = gcc
 HOSTCXX      = g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -fomit-frame-pointer -pipe
-HOSTCXXFLAGS = -Ofast -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -pipe
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -fomit-frame-pointer -pipe -floop-nest-optimize
+HOSTCXXFLAGS = -Ofast -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -pipe -floop-nest-optimize
 
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
@@ -330,7 +330,7 @@ include $(srctree)/scripts/Kbuild.include
 
 AS		= $(CROSS_COMPILE)as
 LD		= $(CROSS_COMPILE)ld
-REAL_CC		= $(CROSS_COMPILE)gcc
+CC		= $(CROSS_COMPILE)gcc
 CPP		= $(CC) -E
 AR		= $(CROSS_COMPILE)ar
 NM		= $(CROSS_COMPILE)nm
@@ -345,11 +345,6 @@ KALLSYMS	= scripts/kallsyms
 PERL		= perl
 CHECK		= sparse
 
-# Use the wrapper for the compiler.  This wrapper scans for new
-# warnings and causes the build to stop upon encountering them.
-CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC) 
-#CPP 		= $(GRAPHITE_FLAGS) -pipe
-
 # Include Graphite Optimizations. Automatically detects if SaberMod
 # toolchain is in use to prevent build errors.
 include $(srctree)/scripts/graphite.mk
@@ -359,8 +354,8 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 CFLAGS_MODULE   = -lto -DMODULE
 AFLAGS_MODULE   = -lto -DMODULE
 LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
-CFLAGS_KERNEL	= -lto -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4
-AFLAGS_KERNEL	= -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops -mcpu=cortex-a7 -mtune=cortex-a7 -marm -mfpu=neon-vfpv4
+CFLAGS_KERNEL	= -lto -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
+AFLAGS_KERNEL	= -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops -mcpu=cortex-a7 -mtune=cortex-a7 -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 

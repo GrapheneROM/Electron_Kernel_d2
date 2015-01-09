@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Graphite agruments.
-GRAPHITE_FLAGS := -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -ftree-loop-distribution -ftree-loop-im -fivopts -funswitch-loops -funroll-loops -ftree-loop-ivcanon -pipe
+GRAPHITE_FLAGS := -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block -ftree-loop-distribution -ftree-loop-im -fivopts -funswitch-loops -funroll-loops -ftree-loop-ivcanon -floop-nest-optimize -pipe
 
 # Add Flags
 CFLAGS_MODULE += $(call cc-option,$(GRAPHITE_FLAGS))
