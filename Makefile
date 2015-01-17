@@ -193,7 +193,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		:= arm
-CROSS_COMPILE	:= /home/syrup-man/saber/bin/arm-eabi-
+CROSS_COMPILE	:= /home/syrup-man/uber_toolchain/LinaroMod-arm-eabi-4.9/bin/arm-eabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -354,8 +354,8 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 CFLAGS_MODULE   = -lto -DMODULE
 AFLAGS_MODULE   = -lto -DMODULE
 LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
-CFLAGS_KERNEL	= -lto -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
-AFLAGS_KERNEL	= -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops -mcpu=cortex-a7 -mtune=cortex-a7 -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
+CFLAGS_KERNEL	= -floop-nest-optimize -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
+AFLAGS_KERNEL	= -floop-nest-optimize -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -funswitch-loops -mcpu=cortex-a7 -mtune=cortex-a7 -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 
@@ -366,17 +366,17 @@ LINUXINCLUDE    := -I$(srctree)/arch/$(hdr-arch)/include \
                    $(if $(KBUILD_SRC), -I$(srctree)/include) \
                    -include $(srctree)/include/linux/kconfig.h
 
-KBUILD_CPPFLAGS := -D__KERNEL__ -Ofast -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad
+KBUILD_CPPFLAGS := -D__KERNEL__ -Ofast -floop-nest-optimize -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad
 
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
-		   -funswitch-loops\
+		   -funswitch-loops -floop-nest-optimize\
 		   $(GRAPHITE_FLAGS)
-KBUILD_AFLAGS_KERNEL :=-fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant  -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad
-KBUILD_CFLAGS_KERNEL := -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -pipe -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad
+KBUILD_AFLAGS_KERNEL := -floop-nest-optimize -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant  -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad
+KBUILD_CFLAGS_KERNEL := -floop-nest-optimize -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -pipe -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE
 KBUILD_CFLAGS_MODULE  := -DMODULE
