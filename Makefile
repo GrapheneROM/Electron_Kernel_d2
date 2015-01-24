@@ -374,7 +374,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
 		   -funswitch-loops -floop-nest-optimize\
-		   $(GRAPHITE_FLAGS)
+		   --param l1-cache-size=16 --param l1-cache-line-size=16 --param l2-cache-size=1024
 KBUILD_AFLAGS_KERNEL := -floop-nest-optimize -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant  -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad
 KBUILD_CFLAGS_KERNEL := -floop-nest-optimize -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -pipe -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad
 KBUILD_AFLAGS   := -D__ASSEMBLY__
